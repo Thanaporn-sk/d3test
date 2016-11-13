@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        width: 960px;
+        height: 500px;
+        position: relative;
+    }
+
+    /*
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      width: 960px;
+      height: 500px;
+      position: relative;
+    }
+    */
+    svg {
+        width: 100%;
+        height: 100%;
+        position: center;
+    }
+
+    path.slice{
+        stroke-width:2px;
+    }
+
+    text{
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    polyline{
+        opacity: .3;
+        stroke: black;
+        stroke-width: 2px;
+        fill: none;
+    }
+
+    .labelValue
+    {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 60%;
+        opacity: .5;
+
+    }
+
+    label {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-weight: normal;
+    }
+
+    .toolTip {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        position: absolute;
+        display: none;
+        width: auto;
+        height: auto;
+        background: none repeat scroll 0 0 white;
+        border: 0 none;
+        border-radius: 8px 8px 8px 8px;
+        box-shadow: -3px 3px 15px #888888;
+        color: black;
+        font: 12px sans-serif;
+        padding: 5px;
+        text-align: center;
+    }
+
+
+    .legend {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 60%;
+    }
+    rect {
+        stroke-width: 2;
+    }
+
+    text {
+        font: 10px sans-serif;
+    }
+
+
+    text.value{
+        font-size: 200%;
+        fill: white;
+    }
+
+    text.label{
+        font-size: 100%;
+    }
+
+    .axis text {
+        font: 10px sans-serif;
+    }
+
+    .axis path{
+        fill: none;
+        stroke: #000;
+    }
+
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .axis .tick line {
+        stroke-width: 1;
+        stroke: rgba(0, 0, 0, 0.2);
+    }
+
+    .axisHorizontal path{
+        fill: none;
+    }
+
+    .axisHorizontal line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .axisHorizontal .tick line {
+        stroke-width: 1;
+        stroke: rgba(0, 0, 0, 0.2);
+    }
+
+    .bar {
+        fill: steelblue;
+        fill-opacity: .5;
+    }
+
+    .x.axis path {
+     /*   display: none;*/
+    }
+
+    .bar.avgline {
+        fill: #fff999;
+    }
+</style>
+<body>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+  
+
+    dataset1 = [
+     {label:"2000" ,min:43, max:60, avg:52},
+      {label:"2001" ,min:47, max:65, avg:54},
+      {label:"2002" ,min:51, max:76, avg:62},
+      {label:"2003" ,min:45, max:71, avg:60},
+      {label:"2004" ,min:53, max:62, avg:57},
+      {label:"2005" ,min:49, max:69, avg:60},
+      {label:"2006" ,min:57, max:85, avg:72},
+      {label:"2007" ,min:66, max:95, avg:78},
+      {label:"2008" ,min:57, max:83, avg:68},
+      {label:"2009" ,min:45, max:69, avg:57},
+      {label:"2010" ,min:60, max:80, avg:67},
+      {label:"2011" ,min:48, max:74, avg:60},
+      {label:"2012" ,min:51, max:69, avg:59},
+      {label:"2013" ,min:44, max:61, avg:51},
+      {label:"2014" ,min:37, max:64, avg:52},
+      {label:"2015" ,min:33, max:60, avg:46},
+      {label:"2016" ,min:44, max:71, avg:56},
+
+     ];
+    
+
+
+    var margin = {
+                  top: (parseInt(d3.select('body').style('height'), 10)/10),
+                  right: (parseInt(d3.select('body').style('width'), 10)/20), 
+                  bottom: (parseInt(d3.select('body').style('height'), 10)/10), 
+                  left: (parseInt(d3.select('body').style('width'), 10)/20)
+                  },
+            width = 600, // parseInt(d3.select('body').style('width'), 10) - margin.left - margin.right,
+            height = 250; //parseInt(d3.select('body').style('height'), 10) - margin.top - margin.bottom;
+
+    var div = d3.select("body").append("div").attr("class", "toolTip");
+
+    var formatPercent = d3.format("");
+
+    var x = d3.scale.ordinal()
+            .rangeRoundBands([0, width], .2, 0.5);
+
+    var y = d3.scale.linear()
+            .range([height, 0]);
+
+    var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickFormat(formatPercent);
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+    change(dataset1);
+
+    function change(dataset) {
+
+        x.domain(dataset.map(function(d) { return d.label; }));
+        y.domain([0, d3.max(dataset, function(d) { return d.max; })]);
+
+        svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+        svg.select(".y.axis").remove();
+        svg.select(".x.axis").remove();
+
+        svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text("docs amt");
+
+        var bar = svg.selectAll(".bar")
+                .data(dataset, function(d) { return d.label; });
+        // new data:
+        
+
+        bar.enter().append("line").attr("class","avgline")
+                          .attr("x1",function(d) { return x(d.label)-1; })
+                          .attr("y1",function(d){ return y(d.avg);})
+                          .attr("x2",function(d) { return x(d.label)+x.rangeBand()+1; })
+                          .attr("y2",function(d){ return y(d.avg);})
+                          .attr("stroke-width", 2)
+                          .attr("stroke", "steelblue");
+        bar.enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", function(d) { return x(d.label); })
+                .attr("y", function(d) { return y(d.max); })
+                .attr("height", function(d) { return height - y(d.max - d.min); })
+                .attr("width", x.rangeBand());
+
+        bar
+                .on("mousemove", function(d){
+                    div.style("left", d3.event.pageX+10+"px");
+                    div.style("top", d3.event.pageY-25+"px");
+                    div.style("display", "inline-block");
+                    div.html((d.label)+"<br><hr>min:"+(d.min)+"<br>max:"+(d.max)+"<br>avg:"+(d.avg));
+                });
+        bar
+                .on("mouseout", function(d){
+                    div.style("display", "none");
+                });
+console.log(bar);
+        // removed data:
+        bar.exit().remove();
+        // updated data:
+        bar
+                .transition()
+                .duration(750)
+                .attr("y", function(d) { return y(d.max); })
+                .attr("height", function(d) { return height - y(d.max-d.min); });
+
+    };
+
+</script>
+</body>
