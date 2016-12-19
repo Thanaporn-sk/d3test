@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html ng-app="Sunburst">
+
+<head>
+  <meta charset="utf-8">
+  <title>Sunburst Data Visualization</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body class="container">
+
+  <!-- header -->
+  <header class="page-header">
+    <h1>Data visualization</h1> 
+    <!--p class="text-small">Interactive data visualization.</p-->
+  </header>
+
+
+  <!-- main content -->
+  <div class="main" ng-controller="MainCtrl as sunburst">
+
+    <!-- visualization -->
+    <!--h2>Visualization</h2>
+    <p>Hover for data summary, click on visualization to reset summary.</p-->
+    <p>Select Data: <select ng-options="example for example in sunburst.examples" ng-model="sunburst.exampleSelected" ng-change="sunburst.selectExample(sunburst.exampleSelected)"></select></p>
+   <input id="fileUpload" type="file" on-read-file="sunburst.getData($fileContent)" />
+    <div class="visualization">
+      <sunburst data="sunburst.data"></sunburst>
+    </div>
+
+
+    
+    <hr />
+
+
+
+    <!-- data/file preview -->
+    <!--div class="preview">
+      <h2>Data</h2>
+      <pre>{{ sunburst.data }}</pre>
+    </div-->
+  </div>
+
+
+  <!-- footer -->
+  <footer>
+    <p>
+      <a href="#">D3 Sunburst Sequence</a> by w
+      <br />
+      <!--a href="http://github.com/chrisrzhou" target="_blank"><i class="fa fa-github"></i></a> |
+      <a href="http://bl.ocks.org/chrisrzhou" target="_blank"><i class="fa fa-cubes"></i></a> |
+      <a href="http://www.linkedin.com/in/chrisrzhou" target="_blank"><i class="fa fa-linkedin"></i></a-->
+    </p>
+  </footer>
+
+
+  <!-- scripts -->
+  <script src="http://code.angularjs.org/1.3.5/angular.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="./js/app.js"></script>
+  <script src="./js/sunburst.js"></script>
+  <script>
+    // Hack to make this example display correctly in an iframe on bl.ocks.org
+    d3.select(self.frameElement).style("height", "1000px");
+  </script>
+</body>
+
+</html>
